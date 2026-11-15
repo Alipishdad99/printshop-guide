@@ -1,6 +1,6 @@
 @echo off
 rem ====================================================================
-rem  Printshop - one-click setup  (Windows 7 SP1 64-bit and newer)
+rem  Printshop - one-click setup  (Windows 7 SP1 and newer, 64-bit and 32-bit)
 rem
 rem  Double-click this file. It does everything by itself:
 rem    1. Visual C++ runtime        4. Git (for downloads and updates)
@@ -44,13 +44,32 @@ rem Port 443 (not 22): SSH on port 22 to GitHub is often cut ("Connection reset"
 set "REPO=ssh://git@ssh.github.com:443/Alipishdad99/printshop-release.git"
 set "GIT_SSH_COMMAND=ssh -i C:/xampp/printshop-key/id_printshop -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=C:/xampp/printshop-key/known_hosts -o ConnectTimeout=30 -o ServerAliveInterval=15"
 
+rem ---------- 64-bit or 32-bit Windows ----------
+rem (a 32-bit cmd on 64-bit Windows reports x86 but sets PROCESSOR_ARCHITEW6432)
+set "ARCH=x64"
+if /i "%PROCESSOR_ARCHITECTURE%"=="x86" if not defined PROCESSOR_ARCHITEW6432 set "ARCH=x86"
+set "MIRROR=https://github.com/Alipishdad99/printshop-guide/releases/download/installers-1"
+if "%ARCH%"=="x86" goto :arch_x86
+rem 64-bit: official XAMPP portable (no installer). SourceForge blocks Iran, so the
+rem official zip is mirrored on GitHub; SourceForge stays as the second source.
+set "VCNAME=VC_redist.x64.exe"
 set "URL_VC=https://aka.ms/vs/16/release/vc_redist.x64.exe"
-rem XAMPP portable (no installer): SourceForge blocks Iran, so the official zip is mirrored on GitHub;
-rem SourceForge stays as the second source.
 set "XZIP=xampp-portable-windows-x64-7.4.33-0-VC15.zip"
-set "URL_XAMPP=https://github.com/Alipishdad99/printshop-guide/releases/download/installers-1/xampp-portable-windows-x64-7.4.33-0-VC15.zip"
+set "URL_XAMPP=%MIRROR%/xampp-portable-windows-x64-7.4.33-0-VC15.zip"
 set "URL_XAMPP2=https://downloads.sourceforge.net/project/xampp/XAMPP%%20Windows/7.4.33/xampp-portable-windows-x64-7.4.33-0-VC15.zip"
-set "URL_GIT=https://github.com/git-for-windows/git/releases/download/v2.46.2.windows.1/Git-2.46.2-64-bit.exe"
+set "GITNAME=Git-2.46.2-64-bit.exe"
+goto :arch_done
+:arch_x86
+rem 32-bit: XAMPP 7.4 has no 32-bit build, so the same layout is made from the official
+rem 32-bit Apache 2.4.57 (Apache Lounge), PHP 7.4.33 (php.net) and MariaDB 10.4.22 (mariadb.org)
+set "VCNAME=VC_redist.x86.exe"
+set "URL_VC=https://aka.ms/vs/16/release/vc_redist.x86.exe"
+set "XZIP=printshop-xampp-x86-7.4.33.zip"
+set "URL_XAMPP=%MIRROR%/printshop-xampp-x86-7.4.33.zip"
+set "URL_XAMPP2="
+set "GITNAME=Git-2.46.2-32-bit.exe"
+:arch_done
+set "URL_GIT=https://github.com/git-for-windows/git/releases/download/v2.46.2.windows.1/%GITNAME%"
 
 echo.
 echo  ==============================================================
@@ -59,21 +78,19 @@ echo    Do not close this window. Some steps take several minutes.
 echo  ==============================================================
 echo.
 
-if /i not "%PROCESSOR_ARCHITECTURE%"=="AMD64" if not defined PROCESSOR_ARCHITEW6432 (
-  echo [X] This Windows is 32-bit. The program needs 64-bit Windows.
-  goto :fail
-)
+echo    Windows: %ARCH%
+echo.
 
 rem ================= 1. Visual C++ =================
 echo [1/7] Visual C++ runtime
-reg query "HKLM\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" /v Installed >nul 2>&1 && goto :vc_ok
-reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" /v Installed >nul 2>&1 && goto :vc_ok
+reg query "HKLM\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\%ARCH%" /v Installed >nul 2>&1 && goto :vc_ok
+reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\%ARCH%" /v Installed >nul 2>&1 && goto :vc_ok
 set "DURL=%URL_VC%"
-set "DNAME=VC_redist.x64.exe"
+set "DNAME=%VCNAME%"
 call :download
 if errorlevel 1 goto :fail
 echo       Installing, 1-2 minutes...
-"%HERE%\VC_redist.x64.exe" /install /quiet /norestart
+"%HERE%\%VCNAME%" /install /quiet /norestart
 set RC=%errorlevel%
 rem 0 = done, 1638 = a newer one is already installed, 3010 = done (restart later)
 if not "%RC%"=="0" if not "%RC%"=="1638" if not "%RC%"=="3010" (
@@ -174,7 +191,7 @@ rem ================= 4. Git =================
 echo [4/7] Git
 if exist "%GIT%" goto :git_ok
 set "DURL=%URL_GIT%"
-set "DNAME=Git-2.46.2-64-bit.exe"
+set "DNAME=%GITNAME%"
 call :download
 if errorlevel 1 goto :fail
 echo       Installing, 1-3 minutes...

@@ -22,10 +22,12 @@
 ## ۱. بررسی ویندوز
 
 1. روی **Computer** (یا This PC) کلیک راست کنید و **Properties** را بزنید.
-2. جلوی **System type** باید **64-bit** نوشته شده باشد.
+2. جلوی **System type** نوشته شده **64-bit** یا **32-bit**؛ هر دو پشتیبانی می‌شوند و `setup.bat` خودش نسخه‌ی درست را برمی‌دارد.
 3. اگر ویندوز ۷ است، باید **Service Pack 1** هم نوشته شده باشد.
 
-> ⚠️ اگر **32-bit** بود یا Service Pack 1 نداشت، ادامه ندهید و با [پشتیبانی](#پشتیبانی) تماس بگیرید.
+> ⚠️ اگر ویندوز ۷ بدون Service Pack 1 است، ادامه ندهید و با [پشتیبانی](#پشتیبانی) تماس بگیرید.
+>
+> ℹ️ XAMPP 7.4 نسخه‌ی ۳۲ بیتی ندارد؛ برای ویندوز ۳۲ بیتی همان چیدمان از نسخه‌های رسمی ۳۲ بیتی Apache 2.4.57، PHP 7.4.33 و MariaDB 10.4.22 ساخته شده و همان‌طور کار می‌کند.
 
 ## ۲. دریافت setup.bat
 
@@ -110,14 +112,16 @@ Waiting for the seller to approve. Checking every 20 seconds...
 
 ## ۸. نصب بدون اینترنت (با فلش)
 
-فروشنده این فایل‌ها را در یک پوشه روی فلش می‌آورد:
+فروشنده این فایل‌ها را در یک پوشه روی فلش می‌آورد (ستون مناسب ویندوز همان کامپیوتر):
 
-| فایل | دریافت از |
-|---|---|
-| `setup.bat` | [همین صفحه](https://github.com/Alipishdad99/printshop-guide/releases/latest/download/setup.bat) |
-| `VC_redist.x64.exe` | [Microsoft](https://aka.ms/vs/16/release/vc_redist.x64.exe) — ۲۵ مگابایت |
-| `xampp-portable-windows-x64-7.4.33-0-VC15.zip` | [GitHub](https://github.com/Alipishdad99/printshop-guide/releases/download/installers-1/xampp-portable-windows-x64-7.4.33-0-VC15.zip) — ۲۰۹ مگابایت (همان فایل رسمی XAMPP؛ SourceForge در ایران باز نمی‌شود) |
-| `printshop-vX.Y.Z.zip` | بخش Releases ریپازیتوری نرم‌افزار (فقط فروشنده) |
+| | ویندوز ۶۴ بیتی | ویندوز ۳۲ بیتی |
+|---|---|---|
+| نصب | [setup.bat](https://github.com/Alipishdad99/printshop-guide/releases/latest/download/setup.bat) | همان |
+| Visual C++ | [VC_redist.x64.exe](https://aka.ms/vs/16/release/vc_redist.x64.exe) — ۲۵ مگ | [VC_redist.x86.exe](https://aka.ms/vs/16/release/vc_redist.x86.exe) — ۱۴ مگ |
+| XAMPP | [xampp-portable-windows-x64-7.4.33-0-VC15.zip](https://github.com/Alipishdad99/printshop-guide/releases/download/installers-1/xampp-portable-windows-x64-7.4.33-0-VC15.zip) — ۲۰۹ مگ | [printshop-xampp-x86-7.4.33.zip](https://github.com/Alipishdad99/printshop-guide/releases/download/installers-1/printshop-xampp-x86-7.4.33.zip) — ۹۶ مگ |
+| نرم‌افزار | `printshop-vX.Y.Z.zip` از Releases ریپازیتوری نرم‌افزار (فقط فروشنده) | همان |
+
+> ℹ️ **ویندوز ۷ آپدیت‌نشده** اغلب نمی‌تواند خودکار از GitHub دانلود کند (TLS 1.2 ندارد). در آن صورت `setup.bat` مرورگر را باز می‌کند تا دستی دانلود کنید؛ یا از همین اول فایل‌ها را روی یک کامپیوتر دیگر بگیرید و با فلش بیاورید.
 
 1. کل پوشه را روی دسکتاپ کپی کنید.
 2. روی `setup.bat` دوبار کلیک کنید. فایل‌های کنار خودش را برمی‌دارد، چیزی دانلود نمی‌کند، zip را خودش باز می‌کند و **Git و کلید لازم نیست**.
@@ -145,7 +149,6 @@ Waiting for the seller to approve. Checking every 20 seconds...
 | `Apache did not start` | برنامه‌ی دیگری (Skype، IIS، …) پورت ۸۰ را گرفته | آن برنامه را ببندید یا حذف کنید و `setup.bat` را دوباره بزنید |
 | `MySQL does not start` | یک MySQL دیگر روی کامپیوتر نصب است | با [پشتیبانی](#پشتیبانی) تماس بگیرید |
 | `needs XAMPP 7.4` | یک XAMPP دیگر (نسخه‌ی جدیدتر) در `C:\xampp` هست | اگر لازمش ندارید، پوشه‌ی `C:\xampp` را تغییر نام دهید و `setup.bat` را دوباره بزنید |
-| `This Windows is 32-bit` | ویندوز ۳۲ بیتی است | ویندوز ۶۴ بیتی لازم است |
 | `Could not extract XAMPP` | فایل zip ناقص دانلود شده | فایل `xampp-portable-…zip` کنار `setup.bat` را پاک کنید و `setup.bat` را دوباره بزنید |
 | `Found an incomplete C:
 mpp` | از نصب قبلی نیمه‌کاره مانده | کاری لازم نیست؛ کنار گذاشته می‌شود (`C:
@@ -161,7 +164,7 @@ mpp` | برنامه‌ای از آن پوشه استفاده می‌کند | XAM
 
 اگر به هر دلیل نخواستید از `setup.bat` استفاده کنید:
 
-1. Visual C++ ، XAMPP 7.4.33 (در `C:\xampp`) و [Git 2.46.2](https://github.com/git-for-windows/git/releases/download/v2.46.2.windows.1/Git-2.46.2-64-bit.exe) را نصب کنید. نسخه‌ی ۲.۴۷ به بعد Git روی ویندوز ۷ نصب نمی‌شود.
+1. Visual C++ ، XAMPP 7.4.33 (در `C:\xampp`) و Git 2.46.2 ([۶۴ بیتی](https://github.com/git-for-windows/git/releases/download/v2.46.2.windows.1/Git-2.46.2-64-bit.exe) / [۳۲ بیتی](https://github.com/git-for-windows/git/releases/download/v2.46.2.windows.1/Git-2.46.2-32-bit.exe)) را نصب کنید. نسخه‌ی ۲.۴۷ به بعد Git روی ویندوز ۷ نصب نمی‌شود.
 2. در XAMPP Control Panel (Run as administrator)، تیک **Service** و **Start** برای Apache و MySQL.
 3. در **Git Bash**:
 
