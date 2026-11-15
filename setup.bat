@@ -45,7 +45,11 @@ set "REPO=ssh://git@ssh.github.com:443/Alipishdad99/printshop-release.git"
 set "GIT_SSH_COMMAND=ssh -i C:/xampp/printshop-key/id_printshop -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=C:/xampp/printshop-key/known_hosts -o ConnectTimeout=30 -o ServerAliveInterval=15"
 
 set "URL_VC=https://aka.ms/vs/16/release/vc_redist.x64.exe"
-set "URL_XAMPP=https://downloads.sourceforge.net/project/xampp/XAMPP%%20Windows/7.4.33/xampp-windows-x64-7.4.33-0-VC15-installer.exe"
+rem XAMPP portable (no installer): SourceForge blocks Iran, so the official zip is mirrored on GitHub;
+rem SourceForge stays as the second source.
+set "XZIP=xampp-portable-windows-x64-7.4.33-0-VC15.zip"
+set "URL_XAMPP=https://github.com/Alipishdad99/printshop-guide/releases/download/installers-1/xampp-portable-windows-x64-7.4.33-0-VC15.zip"
+set "URL_XAMPP2=https://downloads.sourceforge.net/project/xampp/XAMPP%%20Windows/7.4.33/xampp-portable-windows-x64-7.4.33-0-VC15.zip"
 set "URL_GIT=https://github.com/git-for-windows/git/releases/download/v2.46.2.windows.1/Git-2.46.2-64-bit.exe"
 
 echo.
@@ -82,19 +86,34 @@ echo       OK
 rem ================= 2. XAMPP =================
 echo [2/7] XAMPP 7.4 in %XAMPP%
 if exist "%XAMPP%\php\php.exe" goto :xampp_have
+rem a half-finished XAMPP folder (e.g. from a failed installer) is kept aside, not deleted
+if exist "%XAMPP%" (
+  echo       Found an incomplete %XAMPP% - moving it to %XAMPP%.old-%RANDOM%
+  move "%XAMPP%" "%XAMPP%.old-%RANDOM%" >nul
+  if exist "%XAMPP%" (
+    echo [X] Cannot move the old %XAMPP% folder. Close programs using it, or restart Windows, and run setup again.
+    goto :fail
+  )
+)
 set "DURL=%URL_XAMPP%"
-set "DNAME=xampp-windows-x64-7.4.33-0-VC15-installer.exe"
+set "DURL2=%URL_XAMPP2%"
+set "DNAME=%XZIP%"
 call :download
 if errorlevel 1 goto :fail
-echo       Installing, 3-10 minutes. Please wait...
-"%HERE%\%DNAME%" --mode unattended --unattendedmodeui minimal --launchapps 0 --prefix "%XAMPP%" --disable-components xampp_filezilla,xampp_mercury,xampp_tomcat,xampp_perl,xampp_webalizer,xampp_sendmail
-if not exist "%XAMPP%\php\php.exe" (
-  echo [X] XAMPP was not installed. If an antivirus asked something, allow it and run setup again.
+echo       Extracting XAMPP into %XAMPP%, 2-15 minutes. Please wait...
+set "UZIP=%HERE%\%XZIP%"
+set "UDEST=%XAMPP%\.."
+set "UCHECK=%XAMPP%\php\php.exe"
+call :unzip
+if errorlevel 1 (
+  echo [X] Could not extract XAMPP. The zip may be damaged: delete %XZIP% from this folder and run setup again.
   goto :fail
 )
 :xampp_have
+rem (not with for /f: cmd drops the ; and PHP gets broken code; -n: no php.ini, so no warnings)
 set PHPV=
-for /f %%v in ('""%XAMPP%\php\php.exe" -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;""') do set PHPV=%%v
+"%XAMPP%\php\php.exe" -n -r "echo PHP_MAJOR_VERSION, PHP_MINOR_VERSION;" > "%TEMP%\printshop-phpv.txt" 2>nul
+set /p PHPV=<"%TEMP%\printshop-phpv.txt"
 if not "%PHPV%"=="74" (
   echo [X] %XAMPP% has PHP %PHPV%, but the program needs XAMPP 7.4.
   echo     Uninstall that XAMPP, or rename the folder, and run setup again.
@@ -132,11 +151,11 @@ set ZIPF=
 if not exist "%APP%\install.bat" for %%z in ("%HERE%\printshop-v*.zip") do set "ZIPF=%%~fz"
 if not defined ZIPF goto :zip_done
 echo       Extracting %ZIPF% ...
-where tar.exe >nul 2>&1 && tar.exe -xf "%ZIPF%" -C "%XAMPP%\htdocs"
-if exist "%APP%\install.bat" goto :zip_done
-rem Windows 7 has no tar: Windows' own zip support, then wait until copying stops
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=New-Object -ComObject Shell.Application; $s.NameSpace('%XAMPP%\htdocs').CopyHere($s.NameSpace('%ZIPF%').Items(),16); $p=-1; $same=0; while($same -lt 5){Start-Sleep 2; $n=(Get-ChildItem '%APP%' -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object).Count; if($n -gt 0 -and $n -eq $p){$same++}else{$same=0}; $p=$n}"
-if not exist "%APP%\install.bat" (
+set "UZIP=%ZIPF%"
+set "UDEST=%XAMPP%\htdocs"
+set "UCHECK=%APP%\install.bat"
+call :unzip
+if errorlevel 1 (
   echo [X] Could not extract the zip. Extract it by hand into %XAMPP%\htdocs and run setup again.
   goto :fail
 )
@@ -267,14 +286,15 @@ rem Tries curl, PowerShell and BITS; if all fail, opens the browser for a manual
 :download
 if exist "%HERE%\%DNAME%" (
   echo       Using %DNAME% from this folder.
+  set "DURL2="
   exit /b 0
 )
 echo       Downloading %DNAME% ...
 set "DPART=%HERE%\%DNAME%.part"
+:dl_retry
 if exist "%DPART%" del /f /q "%DPART%"
-where curl.exe >nul 2>&1
-if errorlevel 1 goto :dl_ps
-curl.exe -L --fail --retry 3 --connect-timeout 30 -o "%DPART%" "%DURL%"
+if not exist "%SystemRoot%\System32\curl.exe" goto :dl_ps
+"%SystemRoot%\System32\curl.exe" -L --fail --retry 3 --connect-timeout 30 -o "%DPART%" "%DURL%"
 if not errorlevel 1 goto :dl_done
 :dl_ps
 if exist "%DPART%" del /f /q "%DPART%"
@@ -284,6 +304,12 @@ if exist "%DPART%" del /f /q "%DPART%"
 bitsadmin /transfer printshop /download /priority foreground "%DURL%" "%DPART%" >nul 2>&1
 if not errorlevel 1 if exist "%DPART%" goto :dl_done
 if exist "%DPART%" del /f /q "%DPART%"
+rem second source (if any), once
+if defined DURL2 (
+  set "DURL=%DURL2%"
+  set "DURL2="
+  goto :dl_retry
+)
 echo.
 echo  [!] Automatic download did not work.
 echo      The browser opens now. Save the file into this folder:
@@ -298,7 +324,19 @@ echo      Not found yet: %HERE%\%DNAME%
 goto :dl_wait
 :dl_done
 move /y "%DPART%" "%HERE%\%DNAME%" >nul
+set "DURL2="
 exit /b 0
+
+rem Extract %UZIP% into %UDEST%; success when %UCHECK% exists.
+rem Windows 10/11: tar. Windows 7: Windows' own zip support (shows a progress window);
+rem it copies in the background, so wait until nothing has changed for 30 seconds.
+:unzip
+rem Windows own tar by full path (Git has another tar that misreads C:)
+if exist "%SystemRoot%\System32\tar.exe" "%SystemRoot%\System32\tar.exe" -xf "%UZIP%" -C "%UDEST%"
+if exist "%UCHECK%" exit /b 0
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$z='%UZIP%'; $d=(Resolve-Path '%UDEST%').Path; $sh=New-Object -ComObject Shell.Application; $sh.NameSpace($d).CopyHere($sh.NameSpace($z).Items(),16); $top=Join-Path $d ($sh.NameSpace($z).Items() | Select-Object -First 1).Name; $p=''; $same=0; while($same -lt 15){Start-Sleep 2; $f=Get-ChildItem $top -Recurse -Force -ErrorAction SilentlyContinue | Where-Object {-not $_.PSIsContainer} | Measure-Object -Property Length -Sum; $k=[string]$f.Count+'/'+[string]$f.Sum; if($f.Count -gt 0 -and $k -eq $p){$same++}else{$same=0}; $p=$k}"
+if exist "%UCHECK%" exit /b 0
+exit /b 1
 
 rem Wait up to 60 s until MySQL answers.
 :wait_mysql

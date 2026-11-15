@@ -45,7 +45,7 @@
 | مرحله | کار | زمان تقریبی |
 |---|---|---|
 | 1 | Visual C++ (پیش‌نیاز ویندوز) | ۱ تا ۳ دقیقه |
-| 2 | XAMPP در `C:\xampp` (حدود ۱۵۰ مگابایت) | ۵ تا ۱۵ دقیقه |
+| 2 | XAMPP در `C:\xampp` (حدود ۲۱۰ مگابایت، از GitHub) | ۲ تا ۱۵ دقیقه |
 | 3 | روشن شدن خودکار Apache و MySQL با ویندوز | چند ثانیه |
 | 4 | Git (حدود ۷۰ مگابایت) | ۲ تا ۵ دقیقه |
 | 5 | کلید دسترسی این کامپیوتر ← [قدم ۴](#۴-فرستادن-کلید-برای-فروشنده) | تا وقتی فروشنده تأیید کند |
@@ -116,7 +116,7 @@ Waiting for the seller to approve. Checking every 20 seconds...
 |---|---|
 | `setup.bat` | [همین صفحه](https://github.com/Alipishdad99/printshop-guide/releases/latest/download/setup.bat) |
 | `VC_redist.x64.exe` | [Microsoft](https://aka.ms/vs/16/release/vc_redist.x64.exe) — ۲۵ مگابایت |
-| `xampp-windows-x64-7.4.33-0-VC15-installer.exe` | [SourceForge](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/7.4.33/xampp-windows-x64-7.4.33-0-VC15-installer.exe/download) — ۱۴۸ مگابایت |
+| `xampp-portable-windows-x64-7.4.33-0-VC15.zip` | [GitHub](https://github.com/Alipishdad99/printshop-guide/releases/download/installers-1/xampp-portable-windows-x64-7.4.33-0-VC15.zip) — ۲۰۹ مگابایت (همان فایل رسمی XAMPP؛ SourceForge در ایران باز نمی‌شود) |
 | `printshop-vX.Y.Z.zip` | بخش Releases ریپازیتوری نرم‌افزار (فقط فروشنده) |
 
 1. کل پوشه را روی دسکتاپ کپی کنید.
@@ -146,7 +146,12 @@ Waiting for the seller to approve. Checking every 20 seconds...
 | `MySQL does not start` | یک MySQL دیگر روی کامپیوتر نصب است | با [پشتیبانی](#پشتیبانی) تماس بگیرید |
 | `needs XAMPP 7.4` | یک XAMPP دیگر (نسخه‌ی جدیدتر) در `C:\xampp` هست | اگر لازمش ندارید، پوشه‌ی `C:\xampp` را تغییر نام دهید و `setup.bat` را دوباره بزنید |
 | `This Windows is 32-bit` | ویندوز ۳۲ بیتی است | ویندوز ۶۴ بیتی لازم است |
-| XAMPP نصب نشد | آنتی‌ویروس جلویش را گرفته | در آنتی‌ویروس اجازه دهید و `setup.bat` را دوباره بزنید |
+| `Could not extract XAMPP` | فایل zip ناقص دانلود شده | فایل `xampp-portable-…zip` کنار `setup.bat` را پاک کنید و `setup.bat` را دوباره بزنید |
+| `Found an incomplete C:
+mpp` | از نصب قبلی نیمه‌کاره مانده | کاری لازم نیست؛ کنار گذاشته می‌شود (`C:
+mpp.old-…`) و از نو نصب می‌شود |
+| `Cannot move the old C:
+mpp` | برنامه‌ای از آن پوشه استفاده می‌کند | XAMPP Control Panel را ببندید یا ویندوز را Restart کنید و `setup.bat` را دوباره بزنید |
 | برنامه باز نمی‌شود یا صفحه‌ی XAMPP می‌آید | Apache تنظیمات جدید را نگرفته | کامپیوتر را یک بار Restart کنید |
 | از کامپیوتر دیگر باز نمی‌شود | آدرس اشتباه یا شبکه | آدرس IP را دوباره با `ipconfig` بگیرید؛ هر دو کامپیوتر باید در یک شبکه باشند |
 | ظاهر بعد از آپدیت عوض نشده | کش مرورگر | **Ctrl+F5** |
