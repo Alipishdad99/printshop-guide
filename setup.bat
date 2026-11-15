@@ -187,7 +187,7 @@ echo  ==============================================================
 echo    This computer needs permission to download the program.
 echo.
 echo    Send the line below to the seller - Telegram or Bale:
-echo      Ali Pishdad - 09046047852 - t.me/alipishdad313
+echo      Ali Pishdad - 09046047852 - Telegram @alipishdad313 - Bale @alipishdad99
 echo.
 echo    It is ALREADY COPIED: just open the chat and Paste (Ctrl+V).
 echo    It is also saved on the Desktop as printshop-key.txt
@@ -329,6 +329,6 @@ exit /b 0
 echo.
 echo  === Setup stopped. Fix the problem above and run setup again;
 echo      finished steps are skipped.
-echo      Support: Ali Pishdad - 09046047852 (phone / Bale) - Telegram: t.me/alipishdad313
+echo      Support: Ali Pishdad - 09046047852 (phone) - Telegram: @alipishdad313 - Bale: @alipishdad99
 pause
 exit /b 1

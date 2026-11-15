@@ -200,8 +200,9 @@ git -C /c/xampp/htdocs/printshop config core.sshCommand "$GIT_SSH_COMMAND"
 | | |
 |---|---|
 | **نام** | علی پیشداد |
-| **تلفن و بله** | [09046047852](tel:+989046047852) |
-| **تلگرام** | [@alipishdad313](https://t.me/alipishdad313) |
+| **تلفن** | [09046047852](tel:+989046047852) |
+| **تلگرام** | `@alipishdad313` (در برنامه‌ی تلگرام جستجو کنید) |
+| **بله** | [`@alipishdad99`](https://ble.ir/alipishdad99) |
 | **ایمیل** | [alipishdad2003@gmail.com](mailto:alipishdad2003@gmail.com) |
 
 در خود برنامه هم دکمه‌ی **«گزارش مشکل یا پیشنهاد»** در منو (یا Alt+R) هست.
